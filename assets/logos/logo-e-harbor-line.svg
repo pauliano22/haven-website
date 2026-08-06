@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" role="img" aria-label="Haven — Harbor Line">
+  <defs>
+    <radialGradient id="sunGrad" cx="38%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#F2C083"/>
+      <stop offset="45%" stop-color="#E9A860"/>
+      <stop offset="100%" stop-color="#B97F3F"/>
+    </radialGradient>
+    <filter id="sunBlur" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+  <rect width="900" height="480" fill="#111F1A"/>
+  <text x="450" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="92" fill="#F4EEE1">Haven</text>
+  <text x="450" y="184" text-anchor="middle" font-family="sans-serif" font-size="13" letter-spacing="2" fill="#9CADA0">quiet, tuned to you</text>
+  <line x1="60" y1="340" x2="840" y2="340" stroke="#E9A860" stroke-opacity="0.5" stroke-width="1.5"/>
+  <circle cx="450" cy="340" r="150" fill="#E9A860" opacity="0.3" filter="url(#sunBlur)"/>
+  <circle cx="450" cy="340" r="62" fill="url(#sunGrad)"/>
+  <line x1="390" y1="362" x2="510" y2="362" stroke="#E9A860" stroke-opacity="0.28" stroke-width="2"/>
+  <line x1="405" y1="378" x2="495" y2="378" stroke="#E9A860" stroke-opacity="0.18" stroke-width="2"/>
+  <line x1="418" y1="392" x2="482" y2="392" stroke="#E9A860" stroke-opacity="0.1" stroke-width="2"/>
+</svg>

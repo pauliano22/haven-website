@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" role="img" aria-label="Haven — Softened Wave">
+  <path d="M10,40 L18,14 L26,60 L34,16 L42,58 L50,20 L58,40"
+        fill="none" stroke="#E9A860" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M58,40 C64,40 64,20 72,20 C80,20 82,44 90,44 C96,44 98,32 104,32 C109,32 110,42 116,42 C120,42 122,39 126,40 L190,40"
+        fill="none" stroke="#E9A860" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

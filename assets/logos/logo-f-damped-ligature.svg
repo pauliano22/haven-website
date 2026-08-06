@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 200" role="img" aria-label="Haven — Damped Ligature">
+  <text x="350" y="110" text-anchor="middle" font-family="Georgia, serif" font-size="100" fill="#F4EEE1">Haven</text>
+  <path d="M120,140 L134,122 L148,154 L162,124 L176,150 L190,130 L204,140 C240,148 280,148 310,142 C365,131 425,131 480,140"
+        fill="none" stroke="#E9A860" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

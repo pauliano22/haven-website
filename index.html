@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haven — quiet, tuned to you</title>
+<meta name="description" content="Haven is a wearable hearing-protection device that softens the specific frequencies that hurt, tuned by a companion app.">
+<meta property="og:title" content="Haven">
+<meta property="og:description" content="Quiet, tuned to you. Hearing protection that softens what hurts, not everything.">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.png">
+<style>
+  :root {
+    --bg: #F6F1E6;
+    --card: #FDFAF3;
+    --card-border: #E2D8C4;
+    --text: #27221A;
+    --text-soft: #7E7869;
+    --accent: #9C6410;
+    --accent-soft: #C98D4B;
+    --danger: #B5473A;
+
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111F1A;
+      --card: #1A2B25;
+      --card-border: #27392F;
+      --text: #F4EEE1;
+      --text-soft: #9CADA0;
+      --accent: #E9A860;
+      --accent-soft: #C98D4B;
+      --danger: #D2604F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111F1A;
+    --card: #1A2B25;
+    --card-border: #27392F;
+    --text: #F4EEE1;
+    --text-soft: #9CADA0;
+    --accent: #E9A860;
+    --accent-soft: #C98D4B;
+    --danger: #D2604F;
+  }
+  :root[data-theme="light"] {
+    --bg: #F6F1E6;
+    --card: #FDFAF3;
+    --card-border: #E2D8C4;
+    --text: #27221A;
+    --text-soft: #7E7869;
+    --accent: #9C6410;
+    --accent-soft: #C98D4B;
+    --danger: #B5473A;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Nav ─────────────────────────────────────────────────── */
+  nav.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand svg { width: 26px; height: 26px; }
+  .brand span {
+    font-family: var(--serif);
+    font-size: 19px;
+  }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-soft);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 18px;
+    border: 1px solid var(--card-border);
+    background: var(--card);
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .theme-toggle:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ── Hero ────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    max-width: 1080px;
+    margin: 0 auto;
+    height: min(70vh, 560px);
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 0 20px;
+  }
+  .hero-content.positioned {
+    position: absolute;
+    left: 50%;
+    top: 38%;
+    transform: translate(-50%, -50%);
+  }
+  .hero-icon svg { display: block; }
+  .hero-icon.small svg { width: 76px; height: 76px; }
+  .hero-icon.wide svg { width: 200px; height: 80px; }
+  .hero-icon.lockup svg { width: min(560px, 80vw); height: auto; }
+  .wordmark-h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 8vw, 72px);
+    margin: 0;
+    line-height: 1;
+  }
+  .wordmark-h1.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+  .tagline {
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: lowercase;
+    color: var(--text-soft);
+    margin: 0;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-secondary { background: transparent; color: var(--text); border-color: var(--card-border); }
+
+  /* ── Sections ────────────────────────────────────────────── */
+  section.block { padding: 88px 0; }
+  section.block.tight { padding: 56px 0; }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h2.section-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 4vw, 38px);
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text-soft);
+    max-width: 60ch;
+    margin: 0 0 48px;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 760px) {
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+  .feature-card h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+  .feature-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-soft);
+    margin: 0;
+  }
+
+  .shot-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 820px) {
+    .shot-row { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; }
+  }
+  .shot-row img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    display: block;
+  }
+  .shot-caption {
+    font-size: 12.5px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .repo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .repo-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .repo-card:hover { border-color: var(--accent); }
+  .repo-card .repo-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .repo-card .repo-desc {
+    font-size: 12.5px;
+    color: var(--text-soft);
+  }
+
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 40px 0 56px;
+    font-size: 12.5px;
+    color: var(--text-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a { color: var(--text-soft); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+  <nav class="top">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <rect x="20" y="18" width="16" height="64" rx="8" fill="currentColor"/>
+        <rect x="64" y="18" width="16" height="64" rx="8" fill="currentColor"/>
+        <path d="M36,42 C46,42 44,48 50,48 C56,48 54,42 64,42 L64,58 C54,58 56,52 50,52 C44,52 46,58 36,58 Z" fill="currentColor"/>
+      </svg>
+      <span>Haven</span>
+    </a>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#open-source">Open source</a>
+      <a href="https://github.com/pauliano22/haven-app">GitHub</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light or dark theme">◐</button>
+    </div>
+  </nav>
+
+  <div id="top" class="hero">
+    <div class="hero-scene" id="heroScene"></div>
+    <div class="hero-content" id="heroContent">
+      <!-- filled by renderHero() -->
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="block tight" id="how-it-works">
+      <p class="eyebrow">How it works</p>
+      <h2 class="section-title">Find what hurts. Then quiet it.</h2>
+      <p class="lede">
+        Haven pairs a wearable DSP device with a guided app. You tell it which
+        sounds bother you — it softens exactly those frequencies, nothing else.
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Hearing test</h3>
+          <p>
+            A guided test plays tones that rise slowly from quiet, with a
+            large always-reachable stop button and a hard-coded 85&nbsp;dB
+            ceiling the app can never exceed. Find your sensitive frequencies
+            safely.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Tune</h3>
+          <p>
+            Choose how many decibels a frequency band is reduced by — from a
+            gentle dip to fully removed — instead of an all-or-nothing notch
+            filter. Up to five bands at once.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Home</h3>
+          <p>
+            One glance answers the only question that matters: protected, or
+            paused. A breathing amber light on the home screen — nothing to
+            configure to check.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block tight">
+      <p class="eyebrow">The app</p>
+      <h2 class="section-title">Three screens, one job each</h2>
+      <div class="shot-row">
+        <div>
+          <img src="assets/screenshots/home.png" alt="Haven app Home screen showing the breathing protection orb" loading="lazy">
+          <p class="shot-caption">Home — protected or paused</p>
+        </div>
+        <div>
+          <img src="assets/screenshots/tune.png" alt="Haven app Tune screen with frequency response curve and sliders" loading="lazy">
+          <p class="shot-caption">Tune — shape what's softened</p>
+        </div>
+        <div>
+          <img src="assets/screenshots/hearing.png" alt="Haven app Hearing test intro screen" loading="lazy">
+          <p class="shot-caption">Hearing — the guided test</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block tight" id="open-source">
+      <p class="eyebrow">Open source</p>
+      <h2 class="section-title">Built in the open, on OpenEarable</h2>
+      <p class="lede">
+        Haven's hardware and firmware build on <a href="https://github.com/OpenEarable" style="color:var(--accent);">OpenEarable</a>,
+        an open-source ear-worn sensing platform. Everything Haven-specific —
+        app, firmware, hardware, and the early prototypes that got us here —
+        is public.
+      </p>
+      <div class="repo-grid">
+        <a class="repo-card" href="https://github.com/pauliano22/haven-app">
+          <span class="repo-name">haven-app</span>
+          <span class="repo-desc">The mobile app (Expo / React Native)</span>
+        </a>
+        <a class="repo-card" href="https://github.com/pauliano22/haven-zephyr-app">
+          <span class="repo-name">haven-zephyr-app</span>
+          <span class="repo-desc">nRF52 firmware (Zephyr)</span>
+        </a>
+        <a class="repo-card" href="https://github.com/pauliano22/haven-hardware">
+          <span class="repo-name">haven-hardware</span>
+          <span class="repo-desc">PCB exports, mechanical CAD</span>
+        </a>
+        <a class="repo-card" href="https://github.com/pauliano22/haven-workspace">
+          <span class="repo-name">haven-workspace</span>
+          <span class="repo-desc">Everything, tied together</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; width:100%;">
+      <span>&copy; 2026 Haven. Sanctuary/Evergreen design system.</span>
+      <span>
+        <a href="https://github.com/pauliano22/haven-app">GitHub</a>
+      </span>
+    </div>
+  </footer>
+
+<script>
+  // ── Theme toggle ──────────────────────────────────────────
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    function apply(theme) {
+      if (theme) root.setAttribute('data-theme', theme);
+      else root.removeAttribute('data-theme');
+      btn.textContent = (theme === 'light') ? '◑' : '◐';
+    }
+    var saved = localStorage.getItem('haven-theme');
+    if (saved) apply(saved);
+    btn.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme') ||
+        (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('haven-theme', next);
+      apply(next);
+    });
+  })();
+
+  // ── Swappable hero mark ───────────────────────────────────
+  // Change ACTIVE_LOGO to switch the whole site's hero mark. Every option
+  // below is a fully-designed alternative — see assets/logos/ for the same
+  // marks as standalone .svg files, and the design review at
+  // https://claude.ai/code/artifact/780deca4-9bb7-43ea-9869-33e8a70b66ca
+  // for the reasoning behind each one.
+  //
+  // Quick preview without editing this file: add ?logo=e (or f, g, a, b, c, d)
+  // to the URL.
+  var ACTIVE_LOGO = 'g';
+
+  var LOGOS = {
+    // ── "Scene" marks: graphic sits behind real, selectable text ──────────
+    g: {
+      kind: 'scene',
+      scene: '<svg viewBox="0 0 900 380" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;" aria-hidden="true">' +
+        '<defs><radialGradient id="bloomGrad" cx="50%" cy="50%" r="55%">' +
+        '<stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55"/>' +
+        '<stop offset="55%" stop-color="var(--accent)" stop-opacity="0.14"/>' +
+        '<stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>' +
+        '<circle cx="450" cy="190" r="260" fill="url(#bloomGrad)"/></svg>',
+      textTop: '50%',
+    },
+    e: {
+      kind: 'scene',
+      scene: '<svg viewBox="0 0 900 480" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;" aria-hidden="true">' +
+        '<defs><radialGradient id="sunGrad" cx="38%" cy="30%" r="70%">' +
+        '<stop offset="0%" stop-color="#F2C083"/><stop offset="45%" stop-color="var(--accent)"/><stop offset="100%" stop-color="#B97F3F"/></radialGradient>' +
+        '<filter id="sunBlur" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter></defs>' +
+        '<line x1="60" y1="340" x2="840" y2="340" stroke="var(--accent)" stroke-opacity="0.5" stroke-width="1.5"/>' +
+        '<circle cx="450" cy="340" r="150" fill="var(--accent)" opacity="0.28" filter="url(#sunBlur)"/>' +
+        '<circle cx="450" cy="340" r="62" fill="url(#sunGrad)"/>' +
+        '<line x1="390" y1="362" x2="510" y2="362" stroke="var(--accent)" stroke-opacity="0.26" stroke-width="2"/>' +
+        '<line x1="405" y1="378" x2="495" y2="378" stroke="var(--accent)" stroke-opacity="0.16" stroke-width="2"/>' +
+        '<line x1="418" y1="392" x2="482" y2="392" stroke="var(--accent)" stroke-opacity="0.09" stroke-width="2"/></svg>',
+      textTop: '38%',
+    },
+    // ── "Icon" marks: small glyph above real text, simple document flow ──
+    a: {
+      kind: 'icon', size: 'small',
+      icon: '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+        '<defs><radialGradient id="orbGrad" cx="38%" cy="32%" r="70%">' +
+        '<stop offset="0%" stop-color="#F2C083"/><stop offset="45%" stop-color="var(--accent)"/><stop offset="100%" stop-color="#B97F3F"/></radialGradient></defs>' +
+        '<circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent)" stroke-opacity="0.35" stroke-width="1.5"/>' +
+        '<circle cx="50" cy="50" r="34" fill="url(#orbGrad)"/></svg>',
+    },
+    b: {
+      kind: 'icon', size: 'wide',
+      icon: '<svg viewBox="0 0 200 80" aria-hidden="true">' +
+        '<path d="M10,40 L18,14 L26,60 L34,16 L42,58 L50,20 L58,40" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>' +
+        '<path d="M58,40 C64,40 64,20 72,20 C80,20 82,44 90,44 C96,44 98,32 104,32 C109,32 110,42 116,42 C120,42 122,39 126,40 L190,40" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    },
+    c: {
+      kind: 'icon', size: 'small',
+      icon: '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+        '<path d="M18,60 Q50,16 82,60" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>' +
+        '<circle cx="50" cy="76" r="9" fill="var(--accent)"/></svg>',
+    },
+    d: {
+      kind: 'icon', size: 'small',
+      icon: '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+        '<rect x="20" y="18" width="16" height="64" rx="8" fill="var(--accent)"/>' +
+        '<rect x="64" y="18" width="16" height="64" rx="8" fill="var(--accent)"/>' +
+        '<path d="M36,42 C46,42 44,48 50,48 C56,48 54,42 64,42 L64,58 C54,58 56,52 50,52 C44,52 46,58 36,58 Z" fill="var(--accent)"/></svg>',
+    },
+    // ── "Lockup" mark: word + custom flourish baked as one asset ─────────
+    f: {
+      kind: 'lockup',
+      icon: '<svg viewBox="0 0 700 200" role="img" aria-label="Haven">' +
+        '<text x="350" y="110" text-anchor="middle" font-family="Georgia, serif" font-size="100" fill="currentColor">Haven</text>' +
+        '<path d="M120,140 L134,122 L148,154 L162,124 L176,150 L190,130 L204,140 C240,148 280,148 310,142 C365,131 425,131 480,140" ' +
+        'fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    },
+  };
+
+  function renderHero() {
+    var params = new URLSearchParams(location.search);
+    var key = (params.get('logo') || ACTIVE_LOGO).toLowerCase();
+    var logo = LOGOS[key] || LOGOS[ACTIVE_LOGO];
+
+    var scene = document.getElementById('heroScene');
+    var content = document.getElementById('heroContent');
+    scene.innerHTML = '';
+    content.innerHTML = '';
+    content.classList.remove('positioned');
+
+    var ctaHtml =
+      '<div class="hero-cta">' +
+      '<a class="btn btn-primary" href="https://github.com/pauliano22/haven-app">View the app</a>' +
+      '<a class="btn btn-secondary" href="#how-it-works">How it works</a>' +
+      '</div>';
+
+    if (logo.kind === 'scene') {
+      scene.innerHTML = logo.scene;
+      content.classList.add('positioned');
+      content.style.top = logo.textTop;
+      content.innerHTML =
+        '<h1 class="wordmark-h1">Haven</h1>' +
+        '<p class="tagline">quiet, tuned to you</p>' +
+        ctaHtml;
+    } else if (logo.kind === 'icon') {
+      content.innerHTML =
+        '<div class="hero-icon ' + logo.size + '">' + logo.icon + '</div>' +
+        '<h1 class="wordmark-h1">Haven</h1>' +
+        '<p class="tagline">quiet, tuned to you</p>' +
+        ctaHtml;
+    } else if (logo.kind === 'lockup') {
+      content.innerHTML =
+        '<h1 class="wordmark-h1 sr-only">Haven</h1>' +
+        '<div class="hero-icon lockup">' + logo.icon + '</div>' +
+        '<p class="tagline">quiet, tuned to you</p>' +
+        ctaHtml;
+    }
+  }
+  renderHero();
+</script>
+</body>
+</html>

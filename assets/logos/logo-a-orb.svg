@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Haven — the Orb">
+  <defs>
+    <radialGradient id="orbGrad" cx="38%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="#F2C083"/>
+      <stop offset="45%" stop-color="#E9A860"/>
+      <stop offset="100%" stop-color="#B97F3F"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="46" fill="none" stroke="#E9A860" stroke-opacity="0.35" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="34" fill="url(#orbGrad)"/>
+</svg>

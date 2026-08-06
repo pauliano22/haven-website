@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" role="img" aria-label="Haven — Radiant Bloom (active website mark)">
+  <defs>
+    <radialGradient id="bloomGrad" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#E9A860" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#E9A860" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#E9A860" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="380" fill="#111F1A"/>
+  <circle cx="450" cy="190" r="260" fill="url(#bloomGrad)"/>
+  <text x="450" y="200" text-anchor="middle" font-family="Georgia, serif" font-size="100" fill="#F4EEE1">Haven</text>
+  <text x="450" y="234" text-anchor="middle" font-family="sans-serif" font-size="13" letter-spacing="2" fill="#9CADA0">quiet, tuned to you</text>
+</svg>
