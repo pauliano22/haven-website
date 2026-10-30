@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haven · Direction B · Audiogram</title>
+<meta name="description" content="Haven is hearing protection in development that softens the sounds that bother you and keeps the rest.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Direction B, Audiogram: light-first editorial built on the language of hearing charts.
+   Asymmetric grid, mono data labels, and an interactive frequency curve as the hero thesis.
+   Evergreen becomes the ink color; honey marks every band Haven softens. */
+:root {
+  --bg: #f7f3ea; --paper: #fffdf8; --ink: #15241e; --soft: #5b6861; --rule: #dcd3c1; --grid: #ebe3d2;
+  --honey: #a86a12; --honey-fill: rgba(201,141,75,0.18); --curve: #15241e; --on-ink: #f7f3ea;
+  --display: 'Instrument Serif', Georgia, serif;
+  --sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111b17; --paper: #17241f; --ink: #ede7da; --soft: #9aa89f; --rule: #2b3a33; --grid: #20302a;
+    --honey: #e9a860; --honey-fill: rgba(233,168,96,0.16); --curve: #ede7da; --on-ink: #111b17; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111b17; --paper: #17241f; --ink: #ede7da; --soft: #9aa89f; --rule: #2b3a33; --grid: #20302a;
+  --honey: #e9a860; --honey-fill: rgba(233,168,96,0.16); --curve: #ede7da; --on-ink: #111b17; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; }
+a { color: var(--honey); }
+:focus-visible { outline: 2px solid var(--honey); outline-offset: 3px; }
+.wrap { max-width: 1180px; margin-inline: auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+.mono { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+
+nav.top { display: flex; align-items: baseline; justify-content: space-between; padding-block: 20px; border-bottom: 1px solid var(--rule); }
+.brand { font-family: var(--display); font-size: 1.9rem; color: var(--ink); text-decoration: none; position: relative; }
+.brand::after { content: ""; position: absolute; left: -10px; right: -10px; top: -6px; bottom: -6px; border-radius: 50%; background: radial-gradient(circle, var(--honey-fill), transparent 70%); z-index: -1; }
+nav.top ul { display: flex; gap: 26px; list-style: none; margin: 0; padding: 0; }
+nav.top ul a { font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--soft); text-decoration: none; }
+nav.top ul a:hover { color: var(--ink); }
+@media (max-width: 720px) { nav.top ul { display: none; } }
+
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; padding-block: 64px 72px; align-items: center; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 32px; } }
+.hero h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.8rem, 6vw, 4.6rem); line-height: 1.02; margin: 14px 0 20px; letter-spacing: -0.01em; text-wrap: balance; }
+.hero h1 em { color: var(--honey); }
+.hero p { color: var(--soft); font-size: 1.08rem; max-width: 46ch; margin: 0 0 28px; }
+.btn { display: inline-block; padding: 12px 20px; font-weight: 600; font-size: 0.95rem; text-decoration: none; border-radius: 4px; border: 1px solid var(--ink); font-family: var(--sans); cursor: pointer; }
+.btn.solid { background: var(--ink); color: var(--on-ink); }
+.btn.line { color: var(--ink); background: transparent; }
+.ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.chart { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 18px 12px; }
+.chart-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.chart svg { width: 100%; height: auto; display: block; touch-action: none; }
+.chart .tick { font-family: var(--mono); font-size: 10px; fill: var(--soft); }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.handle { cursor: grab; }
+.handle:focus { outline: none; }
+.handle:focus circle.ring { stroke-width: 3; }
+.chart-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+#readout { font-family: var(--mono); font-size: 0.8rem; color: var(--ink); }
+
+section { padding-block: 80px; border-top: 1px solid var(--rule); }
+.split { display: grid; grid-template-columns: 260px minmax(0,1fr); gap: 48px; }
+@media (max-width: 860px) { .split { grid-template-columns: 1fr; gap: 16px; } }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.08; margin: 0 0 18px; text-wrap: balance; }
+p.lead { color: var(--soft); max-width: 62ch; margin: 0 0 32px; font-size: 1.04rem; }
+
+.levels { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.levels div { display: grid; grid-template-columns: 90px minmax(0,1fr) minmax(0, 2fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.levels b { font-family: var(--display); font-weight: 400; font-size: 2rem; color: var(--honey); line-height: 1; }
+.levels span:nth-child(2) { font-weight: 600; }
+.levels span:last-child { color: var(--soft); }
+@media (max-width: 640px) { .levels div { grid-template-columns: 70px minmax(0,1fr); } .levels span:last-child { grid-column: 2; } }
+
+.flow { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-bottom: 28px; }
+.flow div { padding: 18px; border-right: 1px solid var(--rule); background: var(--paper); }
+.flow div:last-child { border-right: 0; }
+.flow strong { display: block; font-family: var(--display); font-weight: 400; font-size: 1.5rem; margin: 6px 0 4px; }
+.flow p { margin: 0; color: var(--soft); font-size: 0.92rem; }
+@media (max-width: 860px) { .flow { grid-template-columns: repeat(2, minmax(0,1fr)); } .flow div:nth-child(2) { border-right: 0; } .flow div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } }
+@media (max-width: 460px) { .flow { grid-template-columns: 1fr; } .flow div { border-right: 0; border-bottom: 1px solid var(--rule); } }
+.explorer { width: 100%; height: 820px; border: 1px solid var(--rule); border-radius: 6px; display: block; background: var(--paper); }
+@media (max-width: 900px) { .explorer { height: 1320px; } }
+
+.app { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 48px; align-items: start; }
+@media (max-width: 860px) { .app { grid-template-columns: 1fr; } }
+.feat { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0; border-top: 1px solid var(--rule); }
+.feat div { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--rule); }
+.feat div:nth-child(odd) { border-right: 1px solid var(--rule); }
+.feat div:nth-child(even) { padding-left: 20px; }
+.feat strong { display: block; font-family: var(--display); font-weight: 400; font-size: 1.5rem; margin-bottom: 4px; }
+.feat p { margin: 0; color: var(--soft); font-size: 0.94rem; }
+@media (max-width: 600px) { .feat { grid-template-columns: 1fr; } .feat div:nth-child(odd) { border-right: 0; } .feat div:nth-child(even) { padding-left: 0; } }
+.phone { width: 290px; max-width: 100%; aspect-ratio: 9/19.5; margin-inline: auto; border-radius: 38px; border: 9px solid var(--ink); background: var(--paper); overflow: hidden; position: relative; }
+.phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.phone figcaption { position: absolute; inset: auto 10px 10px 10px; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; text-align: center; }
+
+table.spec { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+table.spec th, table.spec td { text-align: left; padding: 12px 10px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.spec th { font-family: var(--mono); font-weight: 400; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--soft); width: 30%; }
+table.spec td small { color: var(--soft); }
+.table-wrap { overflow-x: auto; }
+
+.timeline { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--rule); }
+.timeline li { position: relative; padding: 0 0 26px 26px; }
+.timeline li::before { content: ""; position: absolute; left: -6px; top: 6px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--honey); }
+.timeline li.done::before { background: var(--honey); }
+.timeline li.next::before { border-style: dashed; border-color: var(--soft); }
+.timeline strong { display: block; }
+.timeline p { margin: 2px 0 0; color: var(--soft); }
+
+.repos { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.repos a { padding: 18px; border-right: 1px solid var(--rule); text-decoration: none; color: var(--ink); background: var(--paper); }
+.repos a:last-child { border-right: 0; }
+.repos a:hover code { text-decoration: underline; }
+.repos code { font-family: var(--mono); font-size: 0.82rem; color: var(--honey); }
+.repos span { display: block; color: var(--soft); font-size: 0.9rem; margin-top: 6px; }
+@media (max-width: 860px) { .repos { grid-template-columns: 1fr 1fr; } .repos a:nth-child(2) { border-right: 0; } .repos a:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } }
+@media (max-width: 460px) { .repos { grid-template-columns: 1fr; } .repos a { border-right: 0; border-bottom: 1px solid var(--rule); } }
+
+.signup { display: flex; gap: 10px; flex-wrap: wrap; max-width: 520px; }
+.signup input { flex: 1 1 220px; min-width: 0; padding: 12px 14px; border: 1px solid var(--ink); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; }
+#formNote { color: var(--soft); font-size: 0.9rem; min-height: 1.4em; margin-top: 10px; }
+footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; }
+footer .row { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; color: var(--soft); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top" aria-label="Main">
+    <a class="brand" href="#top">Haven</a>
+    <ul>
+      <li><a href="#problem">Why</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#app">App</a></li>
+      <li><a href="#hardware">Hardware</a></li>
+      <li><a href="#status">Status</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <span class="mono">Hearing protection · in development</span>
+      <h1>Turn down the <em>sounds that bother you.</em> Keep the rest.</h1>
+      <p>Earplugs lower every frequency at once. Haven seals your ear, then plays the room back with only the bands you choose softened. Try it on the chart.</p>
+      <div class="ctas">
+        <a class="btn solid" href="#how">See inside the earbud</a>
+        <a class="btn line" href="#follow">Follow the build</a>
+      </div>
+    </div>
+    <figure class="chart" aria-labelledby="chartTitle" style="margin:0">
+      <div class="chart-head">
+        <span class="mono" id="chartTitle">What reaches your ear · illustrative</span>
+        <span class="mono">Drag a band</span>
+      </div>
+      <svg id="curve" viewBox="0 0 600 300" role="group" aria-label="Frequency chart from 125 hertz to 8 kilohertz. Three draggable bands set how much each frequency is softened.">
+        <g id="grid"></g>
+        <path id="fill" fill="var(--honey-fill)"></path>
+        <path id="line" fill="none" stroke="var(--curve)" stroke-width="2.2"></path>
+        <g id="handles"></g>
+      </svg>
+      <div class="chart-foot">
+        <span id="readout" role="status">Band at 3.0 kHz, softened 18 dB</span>
+        <span class="mono">Arrow keys move a selected band</span>
+      </div>
+    </figure>
+  </header>
+</div>
+
+<main>
+  <section id="problem">
+    <div class="wrap split">
+      <span class="mono">01 · Why</span>
+      <div>
+        <h2>The loud places worth going to are the ones that hurt.</h2>
+        <p class="lead">A foam plug lowers everything evenly. Voices get muffled, music loses its detail, and people take them out. Typical levels in places people go every week:</p>
+        <div class="levels">
+          <div><b>100+</b><span>Concerts, clubs</span><span>Often over 100 dB near the stage. You want the band clear, not the harsh peaks.</span></div>
+          <div><b>95</b><span>Power tools, kitchens</span><span>Noise mixed with conversation you still need to follow.</span></div>
+          <div><b>90</b><span>Subways, stadiums</span><span>Long exposure where a flat plug makes you miss announcements.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="split">
+        <span class="mono">02 · How it works</span>
+        <div>
+          <h2>A sealed earbud with a filter you control.</h2>
+          <p class="lead">Four steps, all inside the earbud. The model below is the real v2 design at true scale. Turn it, pull it apart, or follow the sound path.</p>
+        </div>
+      </div>
+      <div class="flow">
+        <div><span class="mono">Step 1</span><strong>Seal</strong><p>A foam tip blocks most outside sound, powered or not.</p></div>
+        <div><span class="mono">Step 2</span><strong>Listen</strong><p>An outward-facing mic picks up the room.</p></div>
+        <div><span class="mono">Step 3</span><strong>Soften</strong><p>Up to five bands are turned down, then a ceiling caps the level.</p></div>
+        <div><span class="mono">Step 4</span><strong>Play back</strong><p>A small speaker fills the sealed ear in about 3 ms, too fast to hear as an echo.</p></div>
+      </div>
+      <iframe class="explorer" src="explorer.html?embed=1" title="Interactive 3D model of the Haven v2 earbud in an ear" loading="lazy"></iframe>
+      <p class="mono" style="margin-top:10px">Ear model built from published anatomical dimensions, not a scan.</p>
+    </div>
+  </section>
+
+  <section id="app">
+    <div class="wrap">
+      <div class="split">
+        <span class="mono">03 · The app</span>
+        <div class="app">
+          <div>
+            <h2>The chart, in your pocket.</h2>
+            <p class="lead">The app is where you set the bands. It sends them to the earbud over Bluetooth, and two independent limits keep the sound below a fixed ceiling.</p>
+            <div class="feat">
+              <div><strong>Home</strong><p>Protected or paused, shown as one slow amber light.</p></div>
+              <div><strong>Tune</strong><p>Up to five bands, each from a gentle dip to fully removed.</p></div>
+              <div><strong>Comfort check</strong><p>Tones that rise slowly, a stop button always in reach, and an 85 dB cap in both the app and the earbud.</p></div>
+              <div><strong>Check-ins</strong><p>A few taps after a loud day. Over weeks, see which settings worked.</p></div>
+            </div>
+          </div>
+          <!-- Interactive demo slot: swap the image for <iframe src="/demo/"> when the web demo ships. -->
+          <figure class="phone" id="demo" style="margin:0">
+            <img src="../assets/screenshots/tune.png" alt="Haven app Tune screen with frequency bands">
+            <figcaption class="mono">Interactive demo coming here</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hardware">
+    <div class="wrap split">
+      <span class="mono">04 · Hardware</span>
+      <div>
+        <h2>What's inside v2.</h2>
+        <p class="lead">Design targets from the current v2 plan. None of these are measured on a built earbud yet.</p>
+        <div class="table-wrap">
+          <table class="spec">
+            <tr><th>Body</th><td>16.7 × 18.9 × 17.5 mm <small>· nozzle for standard 4.5 mm-bore tips</small></td></tr>
+            <tr><th>Audio</th><td>ADAU1860 codec with on-chip signal processor <small>· five filters, limiter, output ceiling</small></td></tr>
+            <tr><th>Wireless</th><td>nRF5340 Bluetooth LE module <small>· settings only, the audio never leaves the earbud</small></td></tr>
+            <tr><th>Battery</th><td>Rechargeable coin cell <small>· 6+ hour target</small></td></tr>
+            <tr><th>Charging</th><td>Case with two-pin contacts and magnets <small>· USB-C on the case</small></td></tr>
+            <tr><th>Latency</th><td>About 3 ms budget <small>· modeled for a well-sealed fit</small></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="wrap split">
+      <span class="mono">05 · Status · Oct 2026</span>
+      <div>
+        <h2>An honest progress report.</h2>
+        <p class="lead">Haven is a prototype in development. Nothing is for sale.</p>
+        <ol class="timeline">
+          <li class="done"><strong>App and firmware written and tested</strong><p>Automated tests cover both. Bluetooth control and safety limits run on a development kit.</p></li>
+          <li class="done"><strong>v1 earbud board designed and quoted</strong><p>Waiting on two parts to come back in stock.</p></li>
+          <li><strong>v2: smaller earbud and charging case</strong><p>Circuit complete. Shell being reshaped to sit securely in real ears.</p></li>
+          <li class="next"><strong>First sound through Haven hardware</strong><p>Not yet. Output levels get measured once boards are built.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="open">
+    <div class="wrap">
+      <div class="split">
+        <span class="mono">06 · Open source</span>
+        <div>
+          <h2>Built in public, on OpenEarable.</h2>
+          <p class="lead">Every design file is on GitHub, from the app to the enclosure.</p>
+        </div>
+      </div>
+      <div class="repos">
+        <a href="https://github.com/pauliano22/haven-app"><code>haven-app</code><span>Mobile app</span></a>
+        <a href="https://github.com/pauliano22/haven-zephyr-app"><code>haven-zephyr-app</code><span>Firmware</span></a>
+        <a href="https://github.com/pauliano22/haven-dev-board-kicad"><code>haven-dev-board-kicad</code><span>Circuit boards</span></a>
+        <a href="https://github.com/pauliano22/haven-hardware"><code>haven-hardware</code><span>Enclosure</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="follow">
+    <div class="wrap split">
+      <span class="mono">07 · Follow</span>
+      <div>
+        <h2>Get a note when Haven makes its first sound.</h2>
+        <form class="signup" id="signup" novalidate>
+          <label for="email" style="position:absolute;left:-9999px">Email address</label>
+          <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+          <button class="btn solid" type="submit">Notify me</button>
+        </form>
+        <p id="formNote" role="status"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span>© 2026 Haven. Hearing protection in development. Not a hearing aid, and not intended to diagnose or treat any condition.</span>
+    <a href="https://github.com/pauliano22">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var W = 600, H = 300, L = 44, R = 14, T = 16, B = 34;
+  var fmin = 125, fmax = 8000, dbMax = 30;
+  var bands = [{ f: 500, d: 8, q: 1.1 }, { f: 3000, d: 18, q: 1.4 }, { f: 6000, d: 12, q: 1.2 }];
+  var sel = 1;
+  function x(f) { return L + (Math.log(f / fmin) / Math.log(fmax / fmin)) * (W - L - R); }
+  function fx(px) { return fmin * Math.pow(fmax / fmin, (px - L) / (W - L - R)); }
+  function y(db) { return T + (db / dbMax) * (H - T - B); }
+  function dy(py) { return Math.max(0, Math.min(dbMax, (py - T) / (H - T - B) * dbMax)); }
+  function att(f) { var s = 0; bands.forEach(function (b) { var o = Math.log2(f / b.f); s += b.d * Math.exp(-(o * o) * (b.q * b.q) * 2.2); }); return Math.min(dbMax, s); }
+  var svg = document.getElementById('curve'), ns = 'http://www.w3.org/2000/svg';
+  var grid = document.getElementById('grid');
+  [125, 250, 500, 1000, 2000, 4000, 8000].forEach(function (f) {
+    var l = document.createElementNS(ns, 'line'); l.setAttribute('x1', x(f)); l.setAttribute('x2', x(f)); l.setAttribute('y1', T); l.setAttribute('y2', H - B); l.setAttribute('class', 'gridline'); grid.appendChild(l);
+    var t = document.createElementNS(ns, 'text'); t.setAttribute('x', x(f)); t.setAttribute('y', H - 12); t.setAttribute('text-anchor', 'middle'); t.setAttribute('class', 'tick'); t.textContent = f >= 1000 ? (f / 1000) + 'k' : f; grid.appendChild(t);
+  });
+  [0, 10, 20, 30].forEach(function (d) {
+    var l = document.createElementNS(ns, 'line'); l.setAttribute('x1', L); l.setAttribute('x2', W - R); l.setAttribute('y1', y(d)); l.setAttribute('y2', y(d)); l.setAttribute('class', 'gridline'); grid.appendChild(l);
+    var t = document.createElementNS(ns, 'text'); t.setAttribute('x', L - 8); t.setAttribute('y', y(d) + 3); t.setAttribute('text-anchor', 'end'); t.setAttribute('class', 'tick'); t.textContent = d === 0 ? '0 dB' : '−' + d; grid.appendChild(t);
+  });
+  var hg = document.getElementById('handles');
+  bands.forEach(function (b, i) {
+    var g = document.createElementNS(ns, 'g'); g.setAttribute('class', 'handle'); g.setAttribute('tabindex', '0'); g.setAttribute('role', 'slider');
+    g.innerHTML = '<circle r="14" fill="transparent"></circle><circle class="ring" r="8" fill="var(--paper)" stroke="var(--honey)" stroke-width="2"></circle>';
+    g.addEventListener('pointerdown', function (e) { sel = i; g.setPointerCapture(e.pointerId); drag = true; render(); });
+    g.addEventListener('pointermove', function (e) { if (!drag || sel !== i) return; var p = pt(e); b.f = Math.max(150, Math.min(7500, fx(p.x))); b.d = dy(p.y); render(); });
+    g.addEventListener('pointerup', function () { drag = false; });
+    g.addEventListener('focus', function () { sel = i; render(); });
+    g.addEventListener('keydown', function (e) {
+      var k = e.key, used = true;
+      if (k === 'ArrowLeft') b.f = Math.max(150, b.f / 1.06); else if (k === 'ArrowRight') b.f = Math.min(7500, b.f * 1.06);
+      else if (k === 'ArrowUp') b.d = Math.max(0, b.d - 1); else if (k === 'ArrowDown') b.d = Math.min(dbMax, b.d + 1); else used = false;
+      if (used) { e.preventDefault(); render(); }
+    });
+    hg.appendChild(g); b.el = g;
+  });
+  var drag = false;
+  function pt(e) { var r = svg.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; }
+  function fmt(f) { return f >= 1000 ? (f / 1000).toFixed(1) + ' kHz' : Math.round(f) + ' Hz'; }
+  function render() {
+    var d = '', n = 160;
+    for (var k = 0; k <= n; k++) { var f = fmin * Math.pow(fmax / fmin, k / n); d += (k ? 'L' : 'M') + x(f).toFixed(1) + ' ' + y(att(f)).toFixed(1); }
+    document.getElementById('line').setAttribute('d', d);
+    document.getElementById('fill').setAttribute('d', 'M' + L + ' ' + y(0) + ' ' + d.replace(/^M/, 'L') + ' L' + (W - R) + ' ' + y(0) + ' Z');
+    bands.forEach(function (b, i) {
+      b.el.setAttribute('transform', 'translate(' + x(b.f).toFixed(1) + ' ' + y(att(b.f)).toFixed(1) + ')');
+      b.el.setAttribute('aria-label', 'Band ' + (i + 1) + ': ' + fmt(b.f) + ', softened ' + Math.round(b.d) + ' decibels');
+      b.el.setAttribute('aria-valuenow', Math.round(b.d));
+    });
+    var s = bands[sel];
+    document.getElementById('readout').textContent = 'Band at ' + fmt(s.f) + ', softened ' + Math.round(s.d) + ' dB';
+  }
+  render();
+  document.getElementById('signup').addEventListener('submit', function (e) {
+    e.preventDefault();
+    document.getElementById('formNote').textContent = "Sign-ups aren't connected yet, so nothing was saved. Watch the GitHub repos for updates for now.";
+  });
+})();
+</script>
+</body>
+</html>
